@@ -78,25 +78,7 @@ public class gameGrid : MonoBehaviour
         {
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
-
-
-
 
 
 
