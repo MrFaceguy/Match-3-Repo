@@ -7,36 +7,38 @@ public class draggableOrb : MonoBehaviour
     public bool isDrag;
     public bool isInPlace;
 
-    public GameObject cellSpace;
+    public Vector2 initialTouch;
 
+    public GameObject originCellNew;
+    public GameObject originCell;
 
+    public bool xLock;
+    public bool yLock;
 
     void Start()
     {
         isDrag = false;
+        initialTouch = Vector2.zero;
+        xLock = false;
+        yLock = false;
 
     }
 
     void Update()
     {
-
         isBeingDragged();
-
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Cell Station")
         {
-            cellSpace = collision.gameObject;
-
-            if (Input.touchCount < 1)
+            if (originCell == null)
             {
-                transform.position = collision.transform.position;
+                originCell = collision.gameObject;
+                transform.position = originCell.transform.position;
             }
-
         }
-
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -48,10 +50,14 @@ public class draggableOrb : MonoBehaviour
             {
                 Touch touch = Input.GetTouch(0);
                 Vector3 touchpos = Camera.main.ScreenToWorldPoint(touch.position);
+                draggableOrb otherOrbScript = collision.GetComponent<draggableOrb>();
 
-                if (gameObject.transform.position != touchpos)
+                if (otherOrbScript.isDrag == false)
                 {
-                    collision.gameObject.transform.position = cellSpace.transform.position;
+                    originCellNew = otherOrbScript.originCell;
+                    otherOrbScript.originCell = originCell;
+                    collision.gameObject.transform.position = otherOrbScript.originCell.transform.position;
+                    originCell = originCellNew;
                 }
             }
         }
@@ -65,8 +71,36 @@ public class draggableOrb : MonoBehaviour
         {
             Touch touch = Input.GetTouch(0);
             Vector2 touchpos = Camera.main.ScreenToWorldPoint(touch.position);
-            Vector2 initialTouch = Camera.main.ScreenToWorldPoint(touch.position); //you need to find a way to make it just select the specific point where you FIRST TAPPED
-            touchpos = new Vector2(Mathf.Clamp(touchpos.x, touchpos.x - 1, touchpos.x + 1), Mathf.Clamp(touchpos.y, touchpos.y - 1, touchpos.y + 1));
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                initialTouch = originCell.transform.position;
+            }
+
+
+            if (xLock == true)
+            {
+                touchpos = new Vector2(touchpos.x, Mathf.Clamp(touchpos.y, initialTouch.y - .25f, initialTouch.y + .5f));
+
+            }
+            if (yLock == true)
+            {
+                touchpos = new Vector2(Mathf.Clamp(touchpos.x, initialTouch.x - .5f, initialTouch.x + .5f), touchpos.y);
+
+            }
+
+
+            if (touchpos.x > initialTouch.x + .5 || touchpos.x < initialTouch.x - .5)
+            {
+                xLock = true;
+            }
+            else if (touchpos.y > initialTouch.y + .5 || touchpos.y < initialTouch.y - .5)
+            {
+                yLock = true;
+            }
+
+
+
             if (touch.phase == TouchPhase.Began && Input.touchCount == 1)
             {
                 if (gameObject.GetComponent<Collider2D>() == Physics2D.OverlapPoint(touchpos))
@@ -84,7 +118,10 @@ public class draggableOrb : MonoBehaviour
 
         else
         {
+            transform.position = originCell.transform.position;
             isDrag = false;
+            xLock = false;
+            yLock = false;
         }
     }
 
