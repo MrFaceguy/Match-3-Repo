@@ -37,9 +37,7 @@ public class gameGrid : MonoBehaviour
                 gridArray[x, y] = Instantiate(cell, new Vector3(gridPos.position.x + (x * distributeIt), gridPos.position.y - (y * distributeIt), 0), transform.rotation);
                 gridArray[x, y].name = "cell " + x + "-" + y;
             }
-
         }
-
         currentPhase = phases.PlayerPhase;
     }
 
