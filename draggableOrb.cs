@@ -11,7 +11,6 @@ public class draggableOrb : MonoBehaviour
 
     public GameObject originCellNew;
     public GameObject originCell;
-
     public bool xLock;
     public bool yLock;
 
