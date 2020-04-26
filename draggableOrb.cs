@@ -21,7 +21,6 @@ public class draggableOrb : MonoBehaviour
         initialTouch = Vector2.zero;
         xLock = false;
         yLock = false;
-
     }
 
     void Update()
